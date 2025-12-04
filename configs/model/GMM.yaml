@@ -1,0 +1,20 @@
+defaults: 
+  - CBM # Inherit model_defaults arguments
+gmm_params:
+  clustering_method: 'gmm' # Type of clustering method ['gmm', 'linear']
+  pretrained_model_path: ~
+  
+  train_on_erroneous_only: False 
+  n_clusters: 10 # Number of clusters/Gaussians in the GMM
+  n_features: 9 # The dimension of the GMM
+  filtered_concepts: ~
+
+  g_epochs: 200 # Number of epochs to train the GMM
+  loss:
+    lambda_c1: 1 # Weight of the concept loss
+    lambda_c2: 1
+    lambda_t: 0 # Weight of the target loss
+    use_concept_loss: True
+    use_task_loss: False
+    use_gmm_loss: True
+   

@@ -1,0 +1,58 @@
+# --------------------------
+#         Dataset
+# --------------------------
+defaults:
+  - data_defaults # Inherit data_defaults arguments
+dataset: 'mnist_sum' # Name of the dataset 
+
+train_file_name: "train_concepts-(2,2):rare_01-(1,1):red_09-(0,3):red_01_samples:3775.npz"
+val_file_name: "val_concepts-(2,2):rare_01-(1,1):red_09-(0,3):red_01_samples:3775.npz"
+test_file_name: "val_concepts-(2,2):rare_01-(1,1):red_09-(0,3):red_01_samples:3775.npz"
+
+num_classes: 7 # Number of classes of the target variable
+num_concepts: 9 # Number of concepts in dataset
+
+subpopulations:
+  - [0, 0]
+  - [0, 1]
+  - [0, 2]
+  - [0, 3]
+  - [0, 3, 'red'] # 4
+  - [1, 0]
+  - [1, 1]
+  - [1, 1, 'red'] # 7
+  - [1, 2]
+  - [1, 3]
+  - [2, 0]
+  - [2, 1]
+  - [2, 2] # 12
+  - [2, 3]
+  - [3, 0]
+  - [3, 1]
+  - [3, 2]
+  - [3, 3]
+  # - [0, 0]
+  # - [0, 1]  # 1
+  # - [0, 2]
+  # - [0, 2, 'red']  # 3
+  # - [0, 3]
+  # - [1, 0] # 5
+  # - [1, 1]
+  # - [1, 1, 'red'] # 7
+  # - [1, 2]
+  # - [1, 3]
+  # - [1, 3, 'label_noise'] # 10
+  # - [2, 0]
+  # - [2, 0, 'red'] # 12
+  # - [2, 1]
+  # - [2, 2]
+  # - [2, 2, 'label_noise'] # 15
+  # - [2, 3]
+  # - [2, 3, 'red']
+  # - [3, 0]
+  # - [3, 1]
+  # - [3, 1, 'label_noise'] # 20
+  # - [3, 2]
+  # - [3, 2, 'red']
+  # - [3, 3]
+# num_populations: 16 # Number of populations in dataset

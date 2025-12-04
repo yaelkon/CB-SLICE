@@ -1,0 +1,10 @@
+defaults: 
+  - model_defaults # Inherit model_defaults arguments
+
+# --------------------------
+#         Model
+# --------------------------
+model: 'cbm' #  Model's name (to indicate it's a baseline)
+tag: 'baseline' # Model's tag for wandb logging
+concept_learning: 'hard' # Concept Bottleneck Model baseline, either hard {0,1} or soft logits ['hard', 'soft']
+concept_loss: 'bce' # Loss function for the concept predictions ['ce', 'bce']

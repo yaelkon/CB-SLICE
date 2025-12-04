@@ -1,0 +1,7 @@
+defaults: 
+  - model_defaults # Inherit model_defaults arguments
+
+# --------------------------
+#         Model
+# --------------------------
+model: 'dnn' #  Model's name (to indicate it's a baseline)

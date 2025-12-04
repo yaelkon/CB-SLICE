@@ -1,0 +1,147 @@
+{
+        // Use IntelliSense to learn about possible attributes.
+        // Hover to view descriptions of existing attributes.
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+                
+                
+
+                {
+                        "name": "Python Debugger: Train CBM - MNIST Sum",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=mnist_sum"
+                },
+                {
+                        "name": "Python Debugger: Train DNN - Waterbirds",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=DNN +data=waterbirds"
+                },
+                {
+                        "name": "Python Debugger: Train DNN - MNIST Sum",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train_dnn.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=DNN +data=mnist_sum"
+                },
+                {
+                        "name": "Python Debugger: Test CBM - MNIST Sum",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/test.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=mnist_sum"
+                },
+                {
+                        "name": "Python Debugger: Test CBM - Waterbirds",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/test.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=waterbirds"
+                },
+                {
+                        "name": "Python Debugger: Train CBM - MetaShiftCatDog",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=metashift_cat_dog"
+                },
+                {
+                        "name": "Python Debugger: Test CBM - MetaShiftCatDog",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/test.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=metashift_cat_dog"
+                },
+                {
+                        "name": "Python Debugger: Train CBM - Waterbirds",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=waterbirds"
+                },
+                {
+                        "name": "Python Debugger: Train CBM - CelebA",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=celebA"
+                },
+                {
+                        "name": "Python Debugger: Test CBM - CelebA",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/test.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=celebA"
+                },
+                {
+                        "name": "Python Debugger: Train GMM-CBM - MetaShiftCatDog",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train_gmm.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=GMM +data=metashift_cat_dog"
+                },
+                {
+                        "name": "Python Debugger: Train GMM-CBM - Waterbirds",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/train_gmm.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=GMM +data=waterbirds"
+                },
+                {
+                        "name": "Python Debugger: Test GMM-CBM - MNIST Sum",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/test_gmm.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=GMM +data=mnist_sum"
+                },
+                {
+                        "name": "Python Debugger: Test Spotlight",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/slice/test_spotlight.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                },
+                {
+                        "name": "Python Debugger: Analyse Error Stats - CBM",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/analyze_erroneous_concepts.py",
+                        "console": "integratedTerminal",
+                        "args": "+model=CBM +data=mnist_sum"
+                },
+                {
+                        "name": "Python Debugger: Test Silhouette",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/slice/run_silouette.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                },
+                {
+                        "name": "Python Debugger: Test concept aware",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "${workspaceFolder}/slice/test_concept_aware.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                },
+        ]
+}

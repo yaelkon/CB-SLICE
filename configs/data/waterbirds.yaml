@@ -1,0 +1,18 @@
+# --------------------------
+#         Dataset
+# --------------------------
+defaults:
+  - data_defaults # Inherit data_defaults arguments
+dataset: 'Waterbirds' # Name of the dataset
+num_classes: 2 # Number of the classes of the target variable
+num_concepts: 116 # Number of concepts in dataset
+concept_type: 'bird_attributes_with_background' # Which concepts to use for the training [bird_type, bird_attributes]
+train_path: 'CUB/Waterbirds/processed/train.pkl'
+val_path: 'CUB/Waterbirds/processed/val_v3_reduced.pkl'
+test_path: 'CUB/Waterbirds/processed/val_v3_reduced.pkl'
+# --------------------------
+subpopulations:
+  - ['landbird', 'land']
+  - ['landbird','water']
+  - ['waterbird', 'land']
+  - ['waterbird', 'water']

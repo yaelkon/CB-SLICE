@@ -1,0 +1,43 @@
+defaults:
+  - data_defaults # Inherit data_defaults arguments
+dataset: 'MetaShiftCatDog' # Name of the dataset
+data_path: '/home/yk449/datasets/MetaShift/Cat-Dog-indoor-outdoor/train-val-equal-distribution/' # Path to the dataset
+num_classes: 2 # Number of classes of the target variable
+num_concepts: 28  # Number of concepts in dataset
+
+subpopulations:
+# [class, attribute]
+  - ['cat', 'indoor']
+  - ['cat', 'outdoor']
+  - ['dog', 'indoor']
+  - ['dog', 'outdoor']
+
+
+concepts:
+  names:
+    - "Long snout"
+    - "Short snout"
+    - "Floppy ears"
+    - "Upright ears"
+    - "Round eyes"
+    - "Slit pupils"
+    - "Curled tail"
+    - "Straight tail"
+    - "Stocky body"
+    - "Slim body"
+    - "Wide muzzle"
+    - "Narrow muzzle"
+    - "Large nose"
+    - "Small nose"
+    - "Broad paws"
+    - "Small paws"
+    - "Short, dense fur"
+    - "Fine, soft fur"
+    - "Simple or spotted coat"
+    - "Striped or marbled coat"
+    - "Short whiskers"
+    - "Long whiskers"
+    - "Expressive face"
+    - "Neutral face"
+    - "Square or upright posture"
+    - "Crouched or perched posture"

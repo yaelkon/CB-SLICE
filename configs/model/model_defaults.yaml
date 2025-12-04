@@ -1,0 +1,29 @@
+# Model
+model_directory: './pretrained_networks/' # Directory of pretrained models
+pretrained_model_path: ~
+
+head_arch: 'linear' # Linear or nonlinear classifier ['linear', 'nonlinear']
+alpha: 1.0        # Weight of concept loss in joint training
+encoder_arch: 'resnet18' # Encoder architecture ['resnet18', 'simple_CNN', 'FCNN']
+
+# Training
+training_mode: 'joint' # Optimization method: ['joint', 'sequential', 'independent']
+validate_per_epoch: 20 # Periodicity to evaluate the model
+save_model_per_epoch: 50 # Periodicity to save the model
+learning_rate: 0.01 # Learning rate in the optimization
+momentum: 0.9 # Momentum in the optimization
+optimizer: 'sgd' # Optimizer: ['sgd','adam']
+scheduler: 'step' # Scheduler: ['step', 'plateau']
+decrease_every: 30 # Frequency of the learning rate decrease
+# patience: 10 # Patience for the learning rate decrease
+lr_divisor: 2 # Rate of the learning rate decrease
+weight_decay: 0.0 # Weight decay
+train_batch_size: 32 # Batch size for the training set
+val_batch_size: 32 # Batch size for the validation and test sets
+
+j_epochs: 200 # Number of epochs for joint training
+c_epochs: 150 # Number of epochs for first stage training in sequential & independent training
+t_epochs: 100 # Number of epochs for second stage training in sequential & independent training
+
+limit_train_batches: ~ # Limit the number of training batches to use per epoch.
+limit_val_batches: ~ # Limit the number of validation batches to use per epoch.

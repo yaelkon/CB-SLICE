@@ -1,0 +1,16 @@
+experiment_name: '' # Name of the experiment
+experiment_dir: './experiments/'
+
+seed: 42 # Random seed
+workers: 4 # Number of workers for data loading
+
+logging:
+  project: 'WANDB_PROJECT' # Name of the wandb project
+  mode: 'disabled' # Whether to log to wandb [online, offline, disabled]
+  entity: "WANDB_ENTITY" # Your wandb entity
+  experiment_name: 'EXPERIMENT_NAME' # Name of the experiment
+  debug_mode: False
+  tags: 
+    - 'TAG1'
+    - 'TAG2'
+    - 'TAG3'
