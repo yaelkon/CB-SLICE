@@ -94,7 +94,8 @@ class MNIST_SUM_Dataset(Dataset):
         ])
 
         self.subpopulations_dict = self._create_subpopulations(subpopulations)
-    
+        self.concept_semantics = MNIST_SUM_CONCEPTS_SEMANTICS_C
+
     def _create_subpopulations(self, subpopulations: List[tuple]) -> dict:
         """
         Create subpopulations based on the provided subpopulations dictionary.
@@ -191,3 +192,16 @@ if __name__ == "__main__":
     hist = np.histogram(np_labels, bins=7)
     print(f"Labels histogram: {hist}")
     print("all data loaded successfully")
+
+
+MNIST_SUM_CONCEPTS_SEMANTICS_C = [
+    "0-left",
+    "1-left",
+    "2-left",
+    "3-left",
+    "0-right",
+    "1-right",
+    "2-right",
+    "3-right",
+    "red",
+]
