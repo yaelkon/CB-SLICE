@@ -592,9 +592,6 @@ def validate_one_gmm_epoch(
             )
 
             # Update metrics
-            # A problematic code fragment. I fixed it inside the update() function
-            # c_true_probs = torch.sigmoid(outputs["c_true_logits"].detach())
-            # c_pred_probs = torch.sigmoid(outputs["c_pred_logits"].detach())
             cluster_ids = torch.argmax(outputs["assignment_probs"], dim=-1)
             metrics.update(
                 concept_pred_loss=loss_gmm_dict["concept_pred_loss"].detach(),
