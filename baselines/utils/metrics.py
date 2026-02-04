@@ -156,7 +156,7 @@ def find_slice_key_concepts(
     gmm_eval_dict: pd.DataFrame,
     experiment_config: DictConfig,
     max_rep_concepts: int = 3,
-    semantic_concepts: str = "mnist_sum_c",
+    semantic_concepts: Union[str, list[str]] = "mnist_sum_c",
     save_dir: str = None,
     save_rep_images: bool = True,
 ) -> dict:
