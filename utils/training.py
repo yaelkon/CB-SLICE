@@ -8,8 +8,15 @@ import pandas as pd
 import json
 import numpy as np
 from tqdm import tqdm
-from utils.plotting import compute_and_plot_heatmap, SubpoopulationPlotter
+from utils.plotting import SubpoopulationPlotter
 from utils.utils import torch_to_numpy, tensor_to_serializable
+from baselines.utils.metrics import (
+    precision_at_k,
+    compute_slice_prioritisation_scores,
+    find_slice_key_concepts,
+)
+from baselines.utils.plotting import plot_slices
+from baselines.utils.utils import data_preprocessing
 
 
 def train_one_epoch_cbm(
@@ -667,22 +674,10 @@ def validate_one_gmm_epoch(
 
     # Calculate and log metrics
     metrics_dict = metrics.compute(validation=True, config=config)
-    # if population_metrics is not None:
-    #     # Compute and plot subpopulation statistics
-    #     population_metrics_dict = population_metrics.compute(validation=True)
-
-    #     subpop_plotter = SubpoopulationPlotter(
-    #         population_metrics=population_metrics_dict,
-    #         subpopulations_str2idx=loader.dataset.subpopulations_dict,
-    #         log_scale=True,
-    #         save_path=config.experiment_dir if not config.logging.debug_mode else "",
-    #     )
-
-    #     subpop_plotter.plot(plot_uncertainty=False)
 
     if save_mixture_slicer_df:
         # Save the mixture slicer DataFrame to a pickle file in the intended directory
-        save_path = os.path.join(config.experiment_dir, "MixtureSlicer")
+        save_path = os.path.join(*[config.experiment_dir, "MixtureSlicer", loader.dataset.stage])
         os.makedirs(save_path, exist_ok=True)
 
         df = pd.DataFrame(mixture_slicer_list)
@@ -695,6 +690,66 @@ def validate_one_gmm_epoch(
             print(f"Mixture slicer DataFrame saved to {save_file}")
         else:
             print(f"ERROR: Mixture slicer DataFrame was not saved! Checked path: {save_file}")
+
+        print("Saving Slice Statistics and Plots...")
+        stats_save_path = os.path.join(save_path, "results")
+        os.makedirs(stats_save_path, exist_ok=True)
+
+        preprocessed_df = data_preprocessing(df)
+        # Save Slice Statistics and Plots
+        precision_at_k_results = precision_at_k(
+            population_ids=preprocessed_df["population_idx"],
+            slices_preds=preprocessed_df["GMM_stats:cluster_id"],
+            slices_probs=preprocessed_df["GMM_stats:cluster_probs"],
+            k=10,
+            save_dir=stats_save_path,
+        )
+
+        slice_prioritisation_scores_df = compute_slice_prioritisation_scores(
+            slice_ids=preprocessed_df["GMM_stats:cluster_id"],
+            slice_probs=preprocessed_df["GMM_stats:cluster_probs"],
+            y_preds=preprocessed_df["y_preds"],
+            embeddings=preprocessed_df["embeddings"],
+            n_classes=config.data.num_classes,
+            saving_dir=stats_save_path,
+        )
+
+        if hasattr(loader.dataset, "original_dataset"):
+            concept_semantics = loader.dataset.original_dataset.concept_semantics
+        else:
+            concept_semantics = loader.dataset.concept_semantics
+
+        find_slice_key_concepts(
+            gmm_eval_dict=preprocessed_df,
+            experiment_config=config,
+            max_rep_concepts=10,
+            semantic_concepts=concept_semantics,
+            save_dir=stats_save_path,
+        )
+
+        sorted_embeddings_args = np.argsort(preprocessed_df["embeddings"][:, 0], axis=0)
+        sorted_embeddings = preprocessed_df["embeddings"][sorted_embeddings_args]
+        sorted_slices = preprocessed_df["GMM_stats:cluster_id"][sorted_embeddings_args]
+        sorted_population_idx = preprocessed_df["population_idx"][sorted_embeddings_args]
+        
+        plot_slices(
+            embeddings=sorted_embeddings,
+            slices=sorted_slices,
+            saving_path=stats_save_path,
+            fig_name="discovered_error_slices_tsne_plot",
+            title="Discovered Error Slices Visualisation",
+            perplexity=30,
+            learning_rate=100,
+        )
+        plot_slices(
+            embeddings=sorted_embeddings,
+            slices=sorted_population_idx,
+            saving_path=stats_save_path,
+            fig_name="gt_error_slices_tsne_plot",
+            title="GT Error Slices Visualisation",
+            perplexity=30,
+            learning_rate=100,
+        )
 
     if not test:
         wandb.log({f"validation/{k}": v for k, v in metrics_dict.items()})

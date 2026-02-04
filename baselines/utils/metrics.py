@@ -1,4 +1,5 @@
 import os
+from typing import Union
 import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, homogeneity_score, completeness_score
@@ -20,7 +21,9 @@ def precision_at_k(population_ids, slices_preds, slices_probs=None, k=10, save_d
         unique_slices = np.unique(p_slice_preds)
         top_k_true_pop = np.ones(k, dtype=int) * pop_id
         best_precision = 0
-        precision_at_k[pop_id] = {"cluster_id": -1, "precision": 0, "frequency": 0}
+        # Frequency - the ratio of the population in the slice
+        # Completeness - the ratio of the population in the slice from the entire population
+        precision_at_k[pop_id] = {"cluster_id": -1, "precision": 0, "frequency": 0, "completeness": 0}
         # Iterate through each unique slice in the population
         for slice_id in unique_slices:
             # # Get the indices of the current slice in the population
@@ -49,16 +52,20 @@ def precision_at_k(population_ids, slices_preds, slices_probs=None, k=10, save_d
 
             # Calculate the frequency of the population in the slice
             s_p_frequency = np.sum(s_pop == pop_id) / len(s_pop)
+            s_p_completeness = np.sum(s_pop == pop_id) / len(p_indices)
+            
             if precision > best_precision:
                 best_precision = precision
                 precision_at_k[pop_id]["cluster_id"] = slice_id
                 precision_at_k[pop_id]["precision"] = best_precision
                 precision_at_k[pop_id]["frequency"] = s_p_frequency
+                precision_at_k[pop_id]["completeness"] = s_p_completeness
 
             elif precision == best_precision and s_p_frequency > precision_at_k[pop_id]["frequency"]:
                 precision_at_k[pop_id]["cluster_id"] = slice_id
                 precision_at_k[pop_id]["precision"] = best_precision
                 precision_at_k[pop_id]["frequency"] = s_p_frequency
+                precision_at_k[pop_id]["completeness"] = s_p_completeness
 
     # precision_at_k["average_precision"] = np.mean([v["precision"] for v in precision_at_k.values() if "precision" in v])
     if save_dir is not None:
@@ -167,12 +174,21 @@ def find_slice_key_concepts(
         "waterbirds_with_background": WATERBIRDS_WITH_BACKGROUND_CONCEPTS_SEMANTICS,
         "metashift_cat_dog": METASHIFT_CAT_DOG_CONCEPTS_SEMANTICS,
     }
-
-    concept_semantics = concept_semantics_dict[semantic_concepts]
+    if isinstance(semantic_concepts, str):
+        concept_semantics = concept_semantics_dict[semantic_concepts]
+    else:
+        concept_semantics = semantic_concepts
 
     if experiment_config.model.gmm_params.filtered_concepts is not None:
         concept_semantics = [concept_semantics[i] for i in experiment_config.model.gmm_params.filtered_concepts]
 
+    slice_prioritisation_scores_df = compute_slice_prioritisation_scores(
+        slice_ids=gmm_eval_dict['GMM_stats:cluster_id'],
+        slice_probs=gmm_eval_dict['GMM_stats:cluster_probs'],
+        y_preds=gmm_eval_dict['y_preds'],
+        embeddings=gmm_eval_dict['embeddings'],
+        n_classes=experiment_config.data.num_classes,
+    )
     # Find the key concepts for each slice based on the average Expected Change in the Cluster Assignment Probabilities (EcCP)
     unique_slices = np.unique(gmm_eval_dict['GMM_stats:cluster_id'])
     slice_representatives_dict = {}
@@ -184,12 +200,10 @@ def find_slice_key_concepts(
         # Calculate the average Expected Change in the Cluster Assignment Probabilities (ECCA)
         slice_ecca = np.average(gmm_eval_dict['GMM_stats:ecca_score'][slice_members_inds], weights=slice_members_probs, axis=0) # [n_concepts]
         # Find the top max_rep_concepts concepts with the highest EcCP that above the average EcCCA
-        top_concepts = np.where(slice_ecca > slice_ecca.mean())[0]
+        # top_concepts = np.where(slice_ecca > slice_ecca.mean())[0]
+        top_concepts = np.argsort(slice_ecca)[::-1][:max_rep_concepts]
         top_concepts_ecca = slice_ecca[top_concepts]
-        ordered_concepts_inds = np.argsort(top_concepts_ecca)[::-1]
-        top_concepts = top_concepts[ordered_concepts_inds][:max_rep_concepts]
-        top_concepts_ecca = top_concepts_ecca[ordered_concepts_inds][:max_rep_concepts]
-        
+  
         slice_members_concept_preds = gmm_eval_dict['c_scores'][slice_members_inds][:, top_concepts] # [n_members, n_top_concepts]
 
         # Based on the assignment probability of the slice members, determine whether 
@@ -233,24 +247,37 @@ def find_slice_key_concepts(
         slice_population_idx_frequency = np.sum(slice_population_idx == slice_population_idx_representative) / len(slice_population_idx)
         print(f"Slice population frequency for slice {slice_id}: {slice_population_idx_frequency}")
 
-        # Select the top-10 images with the highest assignment probability
+        # Select the top-20 images with the highest assignment probability
         top_images_inds = np.argsort(slice_members_probs)[::-1][:20]
         top_images = gmm_eval_dict['img_id'][slice_members_inds][top_images_inds]
         top_images_probs = slice_members_probs[top_images_inds]
         
         top_images_paths = None
-        if "img_path" in gmm_eval_dict:
-            top_images_paths = gmm_eval_dict['img_path'][slice_members_inds][top_images_inds]
-
+        if 'img_path' in gmm_eval_dict:
+            image_column = 'img_path'
+            top_images = gmm_eval_dict['img_path'][slice_members_inds][top_images_inds]
+        elif 'img' in gmm_eval_dict:
+            image_column = 'img'
+            top_images = gmm_eval_dict['img'][slice_members_inds][top_images_inds]
+        else:
+            raise ValueError("gmm_eval_df must contain either 'img_path' or 'img' column")
+        
         if save_rep_images:
             slice_save_dir = os.path.join(save_dir, f"slice_{slice_id}")
             os.makedirs(slice_save_dir, exist_ok=True)
-            for img_id, img_path in zip(top_images[:5], top_images_paths[:5]):
-                img = Image.open(img_path)
+            for img_id, img in zip(top_images_inds[:10], top_images[:10]):
+                if image_column == 'img_path':
+                    img = Image.open(img)
+                else:
+                    img = Image.fromarray(img)
                 img.save(os.path.join(slice_save_dir, f"{img_id}.png"))
 
         slice_representatives_dict[slice_id] = {
             "slice_id": slice_id,
+            "slice_prioritisation_score": slice_prioritisation_scores_df[slice_prioritisation_scores_df['slice_id'] == slice_id]['priority_score'].values[0],
+            "slice_prioritisation_score_10": slice_prioritisation_scores_df[slice_prioritisation_scores_df['slice_id'] == slice_id]['priority_score_10'].values[0],
+            "slice_prioritisation_score_5": slice_prioritisation_scores_df[slice_prioritisation_scores_df['slice_id'] == slice_id]['priority_score_5'].values[0],
+            "slice_prioritisation_score_2": slice_prioritisation_scores_df[slice_prioritisation_scores_df['slice_id'] == slice_id]['priority_score_2'].values[0],
             "population_idx": slice_population_idx_representative,
             "population_name": slice_population_name_representative,
             "population_frequency": slice_population_idx_frequency,
@@ -435,6 +462,134 @@ def calc_homogeinity(labels, cluster_ids):
     return homogeinity_dict
 
 
+def compute_slice_prioritisation_scores(
+    slice_ids, 
+    slice_probs,
+    y_preds,
+    embeddings,
+    n_classes,
+    saving_dir=None,
+    ) -> pd.DataFrame:
+    """
+    Compute the slice prioritisation score for each slice.
+    
+    The priority score is built on 2 terms:
+    1. Misprediction coherence (MC_k) - within an error slice, do the wrong predictions mostly agree with each other?
+       H_k^pred = -sum(p_k(c) * log(p_k(c))), where p_k(c) is the proportion of samples within slice k and predicted label c.
+       MC_k = 1 - [H_k_pred / log(M)], where M is the number of classes.
+    
+    2. Semantic compactness (T*_k) - how slice k is semantically coherent
+       T_k = 1 / N_k * sum_i cos(x_i, mu_k)
+       T*_k = (T_k + 1) / 2
+    
+    priority_score_k = (MC_k + T*_k) / 2
+    
+    Args:
+        slices_dict (dict): Dictionary containing:
+            - 'GMM_stats:cluster_id': array of slice IDs for each sample
+            - 'GMM_stats:cluster_probs': 2D array of assignment probabilities [n_samples, n_clusters]
+            - 'y_preds': array of predicted labels
+            - 'embeddings': 2D array of embeddings [n_samples, embedding_dim]
+    
+    Returns:
+        dict: Dictionary mapping slice_id to priority_score
+    """
+    # slice_ids = slices_dict['GMM_stats:cluster_id']
+    # slice_probs = slices_dict['GMM_stats:cluster_probs']
+    # y_preds = slices_dict['y_preds']
+    # embeddings = slices_dict['embeddings']
+    
+    unique_preds = np.unique(y_preds)
+    M = n_classes  # Number of classes
+    
+    # Normalize embeddings for cosine similarity
+    embeddings_norm = embeddings / (np.linalg.norm(embeddings, axis=1, keepdims=True) + 1e-10)
+    
+    # Get unique slices
+    unique_slices = np.unique(slice_ids)
+    
+    priority_scores = []
+    
+    for slice_id in unique_slices:
+        # Get assignment probabilities for this slice
+        slice_assignment_probs = slice_probs[:, slice_id]  # [n_samples]
+        slice_members_inds = np.where(slice_ids == slice_id)[0]
+
+        if len(slice_members_inds) == 0:
+            priority_scores[slice_id] = 0.0
+            continue
+            
+        k_probs = slice_assignment_probs[slice_members_inds]
+        k_y_preds = y_preds[slice_members_inds]
+        k_embeddings = embeddings_norm[slice_members_inds]
+        N_k = np.sum(k_probs)  # Effective number of samples (weighted sum)
+        
+        # 1. Compute Misprediction Coherence (MC_k)
+        # Calculate p_k(c) - proportion of samples in slice k with predicted label c (weighted by assignment probability)
+        # Initialize p_k for all possible classes
+        p_k = np.zeros(M)
+        for c_idx, c in enumerate(unique_preds):
+            class_mask = k_y_preds == c
+            p_k[c_idx] = np.sum(k_probs[class_mask]) / (N_k + 1e-10)
+        
+        # Calculate entropy H_k^pred
+        # Only include non-zero probabilities to avoid log(0)
+        # Terms with p_k(c) = 0 contribute 0 to entropy (lim p*log(p) = 0 as p->0)
+        p_k_nonzero = p_k[p_k > 1e-10]
+        if len(p_k_nonzero) == 0:
+            # If no valid predictions, set entropy to maximum
+            H_k_pred = np.log(M)
+        elif len(p_k_nonzero) == 1:
+            # If only one class appears, entropy is 0 (perfect coherence)
+            H_k_pred = 0.0
+        else:
+            # Normalize non-zero probabilities and calculate entropy
+            p_k_nonzero = p_k_nonzero / np.sum(p_k_nonzero)
+            H_k_pred = -np.sum(p_k_nonzero * np.log(p_k_nonzero))
+        
+        # Normalize by log(M) where M is the total number of classes
+        if M > 1:
+            MC_k = 1 - (H_k_pred / np.log(M))
+        else:
+            MC_k = 1.0  # If only one class, perfect coherence
+        
+        # 2. Compute Semantic Compactness (T*_k)
+        # Calculate centroid mu_k (weighted average of embeddings)
+        mu_k = np.average(k_embeddings, axis=0, weights=k_probs)
+        mu_k = mu_k / (np.linalg.norm(mu_k) + 1e-10)  # Normalize
+        
+        # Calculate cosine similarity between each embedding and centroid
+        cos_similarities = np.dot(k_embeddings, mu_k)  # [N_k_valid]
+        
+        # Calculate T_k as weighted average of cosine similarities
+        T_k = np.average(cos_similarities, weights=k_probs)
+        
+        # Normalize to [0, 1] range
+        T_star_k = (T_k + 1) / 2
+        
+        # 3. Compute priority score
+        priority_score_k = (MC_k + T_star_k) / 2
+        
+        # 4. Compute reliability multiplier that penalises small size slices
+        reliability_multiplier_10 = 1 - np.exp(-(N_k / 10))
+        reliability_multiplier_5 = 1 - np.exp(-(N_k / 5))
+        reliability_multiplier_2 = 1 - np.exp(-(N_k / 2))
+        priority_scores.append({
+            "slice_id": slice_id,
+            "priority_score": priority_score_k,
+            "priority_score_10": priority_score_k * reliability_multiplier_10,
+            "priority_score_5": priority_score_k * reliability_multiplier_5,
+            "priority_score_2": priority_score_k * reliability_multiplier_2,
+        })
+    
+    df = pd.DataFrame(priority_scores)
+    
+    if saving_dir is not None:
+        os.makedirs(saving_dir, exist_ok=True)
+        df.to_csv(os.path.join(saving_dir, "slice_prioritisation_scores.csv"), index=False)
+    return df
+
+
 MNIST_SUM_CONCEPTS_SEMANTICS_C = [
     "0-left",
     "1-left",
@@ -445,24 +600,6 @@ MNIST_SUM_CONCEPTS_SEMANTICS_C = [
     "2-right",
     "3-right",
     "red",
-    # "(0, 0)",
-    # "(0, 1)",
-    # "(0, 2)",
-    # "(0, 3)",
-    # "(0, 3, 'red')",
-    # "(1, 0)",
-    # "(1, 1)",
-    # "(1, 1, 'red')",
-    # "(1, 2)",
-    # "(1, 3)",
-    # "(2, 0)",
-    # "(2, 1)",
-    # "(2, 2)",
-    # "(2, 3)",
-    # "(3, 0)",
-    # "(3, 1)",
-    # "(3, 2)",
-    # "(3, 3)",
 ]
 
 MNIST_SUM_CONCEPTS_SEMANTICS_T = [
@@ -888,7 +1025,3 @@ METASHIFT_CAT_DOG_CONCEPTS_SEMANTICS = [
     "Indoor", # 26
     "Outdoor", # 27
 ]
-
-
-if __name__ == "__main__":
-    a = 0
