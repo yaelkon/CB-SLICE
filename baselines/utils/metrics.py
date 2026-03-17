@@ -236,7 +236,15 @@ def find_slice_key_concepts(
 
         # Population id as representative for the slice
         slice_population_idx = gmm_eval_dict['population_idx'][slice_members_inds]
-        slice_population_idx_counts = np.bincount(slice_population_idx, weights=slice_members_probs)
+        #slice_population_idx_counts = np.bincount(slice_population_idx, weights=slice_members_probs)
+        # Filter out -1 population indices
+        mask = slice_population_idx >= 0
+        if mask.sum() > 0:
+            filtered_idx = slice_population_idx[mask]
+            filtered_probs = slice_members_probs[mask]
+            slice_population_idx_counts = np.bincount(filtered_idx, weights=filtered_probs)
+        else:
+            slice_population_idx_counts = np.array([0])
         slice_population_idx_representative = np.argmax(slice_population_idx_counts)
         print(f"Slice population id as representative for slice {slice_id}: {slice_population_idx_representative}")
         rep_pop_loc = np.where(slice_population_idx == slice_population_idx_representative)[0][0]

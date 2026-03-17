@@ -1,0 +1,58 @@
+# --------------------------
+#         Dataset
+# --------------------------
+defaults:
+  - data_defaults
+
+dataset: "ISIC"
+num_classes: 2
+root_data_path: "/homes/ea685/isic2026/data/"
+
+train_csv: "isic_train.csv"
+val_csv: "isic_val.csv"
+test_csv: "isic_val.csv"
+num_concepts: 22
+active_spurious: ruler
+
+
+concept_cols:
+
+  # spurious 
+  - dark_corner
+  - hair
+  - gel_border
+  - gel_bubble
+  - ruler
+  - ink
+  - patches
+
+  # clinical
+  # A: asymmetry 
+  - asymm_0
+  - asymm_1
+
+   # B: border
+  - border_irregularity_low
+  - border_irregularity_medium
+
+ 
+  # C: colors 
+  - color_white
+  - color_red
+  - color_light_brown
+  - color_dark_brown
+  - color_gray_blue
+  - color_black
+
+  # D: dermoscopic structures 
+  - derm_pigment_network
+  - derm_negative_network
+  - derm_streaks
+  - derm_milia_like_cyst
+  - derm_globules
+
+subpopulations:
+  - ['benign', 'ruler']
+  - ['benign', 'no_ruler']
+  - ['malignant', 'ruler']
+  - ['malignant', 'no_ruler']

@@ -4,15 +4,14 @@ gmm_params:
   clustering_method: 'gmm' # Type of clustering method ['gmm', 'linear']
   pretrained_model_path: ~
   
-  train_on_erroneous_only: False 
+  train_on_erroneous_only: True
   n_clusters: 10 # Number of clusters/Gaussians in the GMM
-  n_features: 9 # The dimension of the GMM
-  filtered_concepts: ~
-
+  n_features: 11 # The dimension of the GMM
+  filtered_concepts: [9, 7, 2, 10, 4, 16, 17, 18, 1, 11, 14]
   g_epochs: 200 # Number of epochs to train the GMM
   loss:
-    lambda_c1: 1 # Weight of the concept loss
-    lambda_c2: 1
+    lambda_c1: 5 # Weight of the concept loss
+    lambda_c2: 5
     lambda_t: 0 # Weight of the target loss
     use_concept_loss: True
     use_task_loss: False

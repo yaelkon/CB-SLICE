@@ -144,11 +144,13 @@ def main(config: DictConfig):
 
 
 if __name__ == "__main__":
-    EXP_PATH = './experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/GMM/20251204-113817_GMM_debugging_code_flow/'
-
+    EXP_PATH = './experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb/GMM/20260311-011218_gmm_isic_lambda10_k5_seed10'
     with open(os.path.join(EXP_PATH, "config.yaml"), "r") as f:
         experiment_config = yaml.load(f, Loader=yaml.FullLoader)
         experiment_config = DictConfig(experiment_config)
     experiment_config.logging.mode = "disabled"
     experiment_config.model.gmm_params.pretrained_model_path = os.path.join(EXP_PATH, "model_last.pth")
+    
+    experiment_config.data.active_spurious = "ruler"
+    experiment_config.data.subpopulations = [['benign', 'ruler'], ['benign', 'no_ruler'], ['malignant', 'ruler'], ['malignant', 'no_ruler']]
     main(config=experiment_config)
