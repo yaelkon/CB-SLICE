@@ -93,13 +93,13 @@ def test(config: DictConfig):
         )
 
     population_metrics = None
-    if config.data.get("subpopulations", None) is not None and config.model.model == "cbm":
+    if config.data.get("subpopulations", None) is not None:
         population_metrics = Population_Metrics(
             n_concepts=config.data.num_concepts,
             n_populations=len(config.data.subpopulations),
             device=device,
         ).to(device)
-
+    
     validate_one_epoch(
         data_loader=data_loader,
         model=model,
@@ -121,12 +121,24 @@ def main(config: DictConfig):
 
 
 if __name__ == "__main__":
-    EXP_PATH = './experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/'
+    EXP_PATH = "./experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb"
+
     DATASET_SPLIT = "val"
+    ACTIVE_SPURIOUS = "ruler" 
+
     with open(os.path.join(EXP_PATH, "config.yaml"), "r") as f:
         experiment_config = yaml.load(f, Loader=yaml.FullLoader)
         experiment_config = DictConfig(experiment_config)
     experiment_config.logging.mode = "disabled"
     experiment_config.model.pretrained_model_path = os.path.join(EXP_PATH, "model_last.pth")
     experiment_config.stage = DATASET_SPLIT
+    experiment_config.data.active_spurious = ACTIVE_SPURIOUS
+
+    experiment_config.data.subpopulations = [
+        ["benign", ACTIVE_SPURIOUS],
+        ["benign", f"no_{ACTIVE_SPURIOUS}"],
+        ["malignant", ACTIVE_SPURIOUS],
+        ["malignant", f"no_{ACTIVE_SPURIOUS}"],
+    ]
+
     main(config=experiment_config)

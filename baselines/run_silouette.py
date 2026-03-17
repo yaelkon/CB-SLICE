@@ -7,13 +7,13 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
 from domino import MixtureSlicer, SpotlightSlicer
-from utils import data_preprocessing, converter
+from utils.utils import data_preprocessing, converter
 from umap import UMAP
 import pandas as pd
 
-algos = ["kmeans", "domino", "spotlight"]
+algos = ["kmeans", "domino", "spotlight", "george"]
 clusters = [2,4, 6, 8, 10, 12, 14, 16, 18, 20]
-df_path = "./experiments/cbm/Waterbirds/Waterbirds_Attributes_with_Background/20251012-212000_Task_Baseline_wd:0.00001_lr:0.01_decrease:40_sgd/Evaluations_valEqTrainV3/val_eval_df.pkl"
+df_path = "./experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb/eval_ruler/Evaluations/val_eval_df.pkl"
 df = pd.read_pickle(df_path)
 
 data = data_preprocessing(df)

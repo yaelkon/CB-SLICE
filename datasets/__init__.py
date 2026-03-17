@@ -4,6 +4,7 @@ Utility functions for data loading.
 
 from torch.utils.data import DataLoader
 
+from .isic.isic_dataset import get_ISIC_dataloader
 from .mnist_sum.mnist_sum_dataset import get_MNIST_SUM_dataset
 from .waterbirds.waterbirds_dataset import get_Waterbirds_dataloader
 from .celebA.celebA_dataset import get_CelebA_dataset
@@ -45,6 +46,9 @@ def get_data(config_base, config, gen):
         trainset, validset, testset = get_MetaShiftCatDog_dataloader(
             config,
         )
+
+    elif config.dataset == "ISIC":
+        trainset, validset, testset = get_ISIC_dataloader(config)
     else:
         NotImplementedError("ERROR: Dataset not supported!")
 

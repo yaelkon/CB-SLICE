@@ -1,16 +1,14 @@
-experiment_name: '' # Name of the experiment
-experiment_dir: './experiments/'
+experiment_name: 'cbm_isic_K10_lambda5.0_seed42_bs8_lr0.01_wd0.001' 
+experiment_dir: '/homes/ea685/isic2026/repo/experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb/'
+
 
 seed: 42 # Random seed
 workers: 4 # Number of workers for data loading
 
 logging:
-  project: 'WANDB_PROJECT' # Name of the wandb project
-  mode: 'disabled' # Whether to log to wandb [online, offline, disabled]
-  entity: "WANDB_ENTITY" # Your wandb entity
-  experiment_name: 'EXPERIMENT_NAME' # Name of the experiment
+  project: 'isic-cbm' # Name of the wandb project
+  mode: 'online' # Whether to log to wandb [online, offline, disabled]
+  entity: "elaugh9" # Your wandb entity
+  experiment_name: 'cbm_isic_K10_lambda5.0_seed42_bs8_lr0.01_wd0.001' # Name of the experiment
   debug_mode: False
-  tags: 
-    - 'TAG1'
-    - 'TAG2'
-    - 'TAG3'
+  tags: []

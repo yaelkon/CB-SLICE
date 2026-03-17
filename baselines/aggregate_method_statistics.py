@@ -355,11 +355,12 @@ def main(directory_path, output=None, aggregated_pop_ids=None):
 
 
 if __name__ == '__main__':
-    dir = ["domino_pca_weights:40_k=2", "kmeans_k=4", "spotlight_k=2", "george_k=3"]
-    base_directory_path = "./experiments/cbm/Waterbirds/Waterbirds_Attributes_with_Background/20251012-212000_Task_Baseline_wd:0.00001_lr:0.01_decrease:40_sgd/Evaluations_valEqTrain_v3/Slices/"
+    dir = ["kmeans_k=2", "george_k=4", "spotlight_k=2", "domino_pca_weights:40_k=2"]
+    base_directory_path = "./experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb/Evaluations/Slices/"
+
     for d in dir:
         print(f"Calculating statistics for {d}")
         directory_path = os.path.join(base_directory_path, d)
         output = os.path.join(directory_path, "precision_at_10_statistics.csv")
-        aggregated_pop_ids = [[1, 2]]
+        aggregated_pop_ids = [[0, 3]]
         main(directory_path=directory_path, output=output, aggregated_pop_ids=aggregated_pop_ids)

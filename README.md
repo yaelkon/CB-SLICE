@@ -1,4 +1,4 @@
-# CB-SLICE
+# CBE-ESD
 Concept Based Explanation for Error Slice Discovery
 
 How to use the code?

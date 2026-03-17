@@ -103,7 +103,7 @@ def main(val_data=None, test_data=None, config=None):
     error_slices = [representative_slices[pop_idx]["cluster_id"] for pop_idx in representative_slices.keys() if pop_idx in config['error_pop_inds']]
     assert -1 not in error_slices, "Error slices should not contain -1"
 
-    stats_dict["error_slices_purity_score"] = calc_error_slices_purity_score(
+    stats_dict["error_slices_homogeneity_score"] = calc_error_slices_purity_score(
         error_slice_index=error_slices,
         population_indices=test_pop_idx,
         slice_preds=slice_labels,
@@ -119,27 +119,27 @@ def main(val_data=None, test_data=None, config=None):
     stats_path = os.path.join(config["saving_path"], "metric_scores.csv")
     pd.DataFrame(stats_dict, index=[0]).to_csv(stats_path, index=False)
     
-    # Plot Only Erroneous Samples
-    plot_slices(
-        embeddings=test_data['embeddings'][error_mask],
-        targets=test_data['labels'][error_mask],
-        pred_labels=test_data['y_preds'][error_mask],
-        slices=slice_labels[error_mask],
-        saving_path=config["saving_path"],
-        dim_reduction_method='tsne',
-        fig_name='error_slices_tsne_plot_spotlight',
-        title="Predicted Error Slices Visualisation",
-    )
+    # # Plot Only Erroneous Samples
+    # plot_slices(
+    #     embeddings=test_data['embeddings'][error_mask],
+    #     targets=test_data['labels'][error_mask],
+    #     pred_labels=test_data['y_preds'][error_mask],
+    #     slices=slice_labels[error_mask],
+    #     saving_path=config["saving_path"],
+    #     dim_reduction_method='tsne',
+    #     fig_name='error_slices_tsne_plot_spotlight',
+    #     title="Predicted Error Slices Visualisation",
+    # )
     print("Done!")
 
 if __name__ == "__main__":
     
-    experiment_path = "./experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/"
+    experiment_path = "./experiments/cbm/ISIC/isic_cbm_seq_c22_1024_concept-only/20260116-231121_isic_cbm_vanilla/cbm/ISIC/train_cbm_with_full_spur_feb/20260221-100735_cbm_isic_hard_sgd_bs32_lr0.01_wd0.001_seed42-train_cbm_with_full_spur_feb/"
     evaluation_folder_name = "Evaluations"
     val_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
     test_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
 
-    n_slices = [3]
+    n_slices = [4]
     for s in n_slices:
         saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "Slices", f"george_k={s}"])
         parent_path = os.path.dirname(saving_path)
@@ -163,7 +163,7 @@ if __name__ == "__main__":
                 "saving_path": saving_path_seed,
                 'seed': seed,
                 'k': [5, 10],
-                'error_pop_inds': [1, 2],
+                'error_pop_inds': [0, 3],
             }
 
             main(

@@ -711,10 +711,17 @@ def validate_one_gmm_epoch(
             saving_dir=stats_save_path,
         )
 
-        if hasattr(loader.dataset, "original_dataset"):
+
+        # Get concept semantics (names) for the concepts.
+        # Fall back to config.data.concept_cols if the dataset doesn't define them.
+        if hasattr(loader.dataset, "original_dataset") and hasattr(
+            loader.dataset.original_dataset, "concept_semantics"
+        ):
             concept_semantics = loader.dataset.original_dataset.concept_semantics
-        else:
+        elif hasattr(loader.dataset, "concept_semantics"):
             concept_semantics = loader.dataset.concept_semantics
+        else:
+            concept_semantics = config.data.concept_cols
 
         find_slice_key_concepts(
             gmm_eval_dict=preprocessed_df,
