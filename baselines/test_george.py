@@ -120,28 +120,28 @@ def main(val_data=None, test_data=None, config=None):
     pd.DataFrame(stats_dict, index=[0]).to_csv(stats_path, index=False)
     
     # Plot Only Erroneous Samples
-    plot_slices(
-        embeddings=test_data['embeddings'][error_mask],
-        targets=test_data['labels'][error_mask],
-        pred_labels=test_data['y_preds'][error_mask],
-        slices=slice_labels[error_mask],
-        saving_path=config["saving_path"],
-        dim_reduction_method='tsne',
-        fig_name='error_slices_tsne_plot_spotlight',
-        title="Predicted Error Slices Visualisation",
-    )
+    # plot_slices(
+    #     embeddings=test_data['embeddings'][error_mask],
+    #     targets=test_data['labels'][error_mask],
+    #     pred_labels=test_data['y_preds'][error_mask],
+    #     slices=slice_labels[error_mask],
+    #     saving_path=config["saving_path"],
+    #     dim_reduction_method='tsne',
+    #     fig_name='error_slices_tsne_plot_spotlight',
+    #     title="Predicted Error Slices Visualisation",
+    # )
     print("Done!")
 
 if __name__ == "__main__":
     
-    experiment_path = "./experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/"
+    experiment_path = "/homes/ea685/new_baseline/data/MNIST/MNIST-SUM/CBM_Joint/"
     evaluation_folder_name = "Evaluations"
     val_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
     test_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
 
-    n_slices = [3]
+    n_slices = [4]
     for s in n_slices:
-        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "Slices", f"george_k={s}"])
+        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "new_slices", f"george_k={s}"])
         parent_path = os.path.dirname(saving_path)
         if not os.path.exists(parent_path):
             print(f"Creating saving directory: {parent_path}")
@@ -163,7 +163,7 @@ if __name__ == "__main__":
                 "saving_path": saving_path_seed,
                 'seed': seed,
                 'k': [5, 10],
-                'error_pop_inds': [1, 2],
+                'error_pop_inds': [6, 12],
             }
 
             main(
