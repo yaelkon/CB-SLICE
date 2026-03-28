@@ -178,7 +178,7 @@ def calculate_average_homogeinity_and_completeness_score_stats(directory_path):
             df = pd.read_csv(scores_path)
 
             # Validate required columns
-            required_cols = ['error_slices_homogeneity_score', 'underperforming_populations_completeness_score']
+            required_cols = ['error_slices_purity_score', 'underperforming_populations_completeness_score']
             if not all(col in df.columns for col in required_cols):
                 print(
                     f"Warning: {scores_path} missing required columns, skipping"
@@ -300,9 +300,9 @@ def main(directory_path, output=None, aggregated_pop_ids=None):
             directory_path
         )
 
-        result_df_homogeneity_and_v_measure_score = calculate_average_homogeinity_and_completeness_score_stats(
-            directory_path
-        )
+        # result_df_homogeneity_and_v_measure_score = calculate_average_homogeinity_and_completeness_score_stats(
+        #     directory_path
+        # )
 
         result_df_underperforming_population_frequency = calculate_average_underperforming_population_frequency_in_rep_slice(
             directory_path, aggregated_pop_ids
@@ -334,16 +334,16 @@ def main(directory_path, output=None, aggregated_pop_ids=None):
                     aggregated_df.to_csv(aggregated_output, index=False)
                     print(f"\nAggregated results saved to {aggregated_output}")
 
-        print("\nHomogeneity and V-Measure Score Statistics:")
-        print("=" * 60)
-        print(result_df_homogeneity_and_v_measure_score.to_string(index=False))
+        # print("\nHomogeneity and V-Measure Score Statistics:")
+        # print("=" * 60)
+        # print(result_df_homogeneity_and_v_measure_score.to_string(index=False))
 
         # Save to CSV if output specified
         if output:
             result_df.to_csv(output, index=False)
-            v_score_path = output.replace("precision_at_10_statistics.csv", "v_score_statistics.csv")
-            result_df_homogeneity_and_v_measure_score.to_csv(v_score_path, index=False)
-            print(f"\nIndividual results saved to {output} and {v_score_path}")
+           # v_score_path = output.replace("precision_at_10_statistics.csv", "v_score_statistics.csv")
+            #result_df_homogeneity_and_v_measure_score.to_csv(v_score_path, index=False)
+            #print(f"\nIndividual results saved to {output} and {v_score_path}")
             underperforming_population_frequency_path = output.replace("precision_at_10_statistics.csv", "err_population_frequency_statistics.csv")
             result_df_underperforming_population_frequency.to_csv(underperforming_population_frequency_path, index=False)
             print(f"\nIndividual results saved to {output} and {underperforming_population_frequency_path}")
@@ -355,11 +355,11 @@ def main(directory_path, output=None, aggregated_pop_ids=None):
 
 
 if __name__ == '__main__':
-    dir = ["domino_pca_weights:40_k=2", "kmeans_k=4", "spotlight_k=2", "george_k=3"]
-    base_directory_path = "./experiments/cbm/Waterbirds/Waterbirds_Attributes_with_Background/20251012-212000_Task_Baseline_wd:0.00001_lr:0.01_decrease:40_sgd/Evaluations_valEqTrain_v3/Slices/"
+    dir = ["domino_pca_weights:40_k=4", "kmeans_k=15", "spotlight_k=2", "george_k=4","hibug2_k=4"]
+    base_directory_path = "/homes/ea685/new_baseline/data/MNIST/MNIST-SUM/CBM_Joint/Evaluations/new_slices/"
     for d in dir:
         print(f"Calculating statistics for {d}")
         directory_path = os.path.join(base_directory_path, d)
         output = os.path.join(directory_path, "precision_at_10_statistics.csv")
-        aggregated_pop_ids = [[1, 2]]
+        aggregated_pop_ids = [[6, 12]]
         main(directory_path=directory_path, output=output, aggregated_pop_ids=aggregated_pop_ids)

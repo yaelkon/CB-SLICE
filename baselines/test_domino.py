@@ -82,22 +82,22 @@ def main(val_data=None, config=None):
     stats_path = os.path.join(config["saving_path"], "metric_scores.csv")
     pd.DataFrame(stats_dict, index=[0]).to_csv(stats_path, index=False)
     
-    # Plot Only Erroneous Samples
-    plot_slices(
-        embeddings=test_embeddings[error_mask],
-        targets=test_labels[error_mask],
-        pred_labels=test_pred_labels[error_mask],
-        slices=slice_labels[error_mask],
-        saving_path=config["saving_path"],
-        dim_reduction_method='tsne',
-        fig_name='error_slices_tsne_plot_spotlight',
-        title="Predicted Error Slices Visualisation",
-    )
+    # # Plot Only Erroneous Samples
+    # plot_slices(
+    #     embeddings=test_embeddings[error_mask],
+    #     targets=test_labels[error_mask],
+    #     pred_labels=test_pred_labels[error_mask],
+    #     slices=slice_labels[error_mask],
+    #     saving_path=config["saving_path"],
+    #     dim_reduction_method='tsne',
+    #     fig_name='error_slices_tsne_plot_spotlight',
+    #     title="Predicted Error Slices Visualisation",
+    # )
     print("Done!")
 
 if __name__ == "__main__":
     
-    experiment_path = "./experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/"
+    experiment_path = "../../data/MNIST/MNIST-SUM/CBM_Joint/"
     evaluation_folder_name = "Evaluations"
     val_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
 
@@ -132,9 +132,9 @@ if __name__ == "__main__":
     clip_image_embeddings = np.array(clip_image_embeddings_list)
     val_data["clip_image_embeddings"] = clip_image_embeddings
 
-    n_slices = [2]
+    n_slices = [4]
     for s in n_slices:
-        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "Slices", f"domino_pca_weights:40_k={s}"])
+        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "new_slices", f"domino_pca_weights:40_k={s}"])
         parent_path = os.path.dirname(saving_path)
         if not os.path.exists(parent_path):
             print(f"Creating saving directory: {parent_path}")
@@ -157,7 +157,7 @@ if __name__ == "__main__":
                 "saving_path": saving_path_seed,
                 'seed': seed,
                 'k': [5, 10],
-                'error_pop_inds': [1, 2],
+                'error_pop_inds': [6, 12],
                 'y_log_likelihood_weight': 40,
                 'y_hat_log_likelihood_weight': 40,
                 # [2, 6, 12],

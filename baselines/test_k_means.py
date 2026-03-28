@@ -30,17 +30,17 @@ def main(val_data, test_data, config=None):
     # Plot error slices
     error_mask = test_pred_labels != test_targets
 
-    # Plot Only Erroneous Samples
-    plot_slices(
-        embeddings=test_embeddings[error_mask],
-        targets=test_targets[error_mask],
-        pred_labels=test_pred_labels[error_mask],
-        slices=slices[error_mask],
-        saving_path=config["saving_path"],
-        dim_reduction_method='tsne',
-        fig_name='error_slices_tsne_plot_kmeans',
-        title="Predicted Error Slices Visualisation",
-    )
+    # # Plot Only Erroneous Samples
+    # plot_slices(
+    #     embeddings=test_embeddings[error_mask],
+    #     targets=test_targets[error_mask],
+    #     pred_labels=test_pred_labels[error_mask],
+    #     slices=slices[error_mask],
+    #     saving_path=config["saving_path"],
+    #     dim_reduction_method='tsne',
+    #     fig_name='error_slices_tsne_plot_kmeans',
+    #     title="Predicted Error Slices Visualisation",
+    # )
 
     for k in config["k"]:
         precision_at_k_results = precision_at_k(
@@ -84,14 +84,14 @@ def main(val_data, test_data, config=None):
 
 
 if __name__ == "__main__":
-    experiment_path = "./experiments/cbm/Waterbirds/20251204-110018_CBM_debugging_code_flow/"
-    evaluation_folder_name = "Evaluations"
+    experiment_path = "../../data/MNIST/MNIST-SUM/CBM_Joint/"
+    evaluation_folder_name = "Evaluations/"
     val_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
     test_df_path = os.path.join(experiment_path, evaluation_folder_name, "val_eval_df.pkl")
     
-    n_slices = [4]
+    n_slices = [15]
     for s in n_slices:
-        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "Slices", f"kmeans_k={s}"])
+        saving_path = os.path.join(*[experiment_path, evaluation_folder_name, "new_slices", f"kmeans_k={s}"])
         parent_path = os.path.dirname(saving_path)
         if not os.path.exists(parent_path):
             print(f"Creating saving directory: {parent_path}")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 "saving_path": saving_path_seed,
                 'seed': seed,
                 "k": [5, 10],
-                "error_pop_inds": [1, 2],
+                "error_pop_inds": [6, 12],
             }
 
             main(
