@@ -1,4 +1,4 @@
-name: cbe-esd
+name: cb-slice
 channels:
   - pytorch
   - nvidia
@@ -38,4 +38,4 @@ dependencies:
       - tokenizers==0.21.1
       - transformers==4.51.3
       - umap-learn==0.5.7
-prefix: /home/yk449/.conda/envs/cbe-esd
+prefix: /home/<ENVS_DIR>/envs/cb-slice
