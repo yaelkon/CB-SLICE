@@ -1,6 +1,6 @@
 # CB-SLICE: Concept-Based Interpretable Error Slice Discovery
 
-Official implementation of **CB-SLICE**, a concept-based Slice Discovery Method (SDM) that groups
+Official implementation of **CB-SLICE**, a concept-based error Slice Discovery Method (SDM) that groups
 samples with shared concept prediction failures and identifies the keyword-concepts most responsible
 for each slice's failure-mode.
 
