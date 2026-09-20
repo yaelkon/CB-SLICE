@@ -575,7 +575,7 @@ class MixtureGaussiansCBM(nn.Module):
 
     def calculate_ecca(self, x):
         """
-        Calculate the expected change in concept assignment (ECCA) for concept intervention.
+        Calculate the Expected Change in Cluster Assignment (ECCA) for concept intervention. Equivalent to the ECSA score in the paper.
         """
         eps = 1e-6
         outputs = self(x)
